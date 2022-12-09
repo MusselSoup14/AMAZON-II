@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<EISCStudioProject version="3.00">
+    <Compile BUILDTYPE="library" CC="ae32000-elf-gcc" AS="ae32000-elf-as" LD="ae32000-elf-ld" AR="ae32000-elf-ar" OBJDUMP="ae32000-elf-objdump" OBJCOPY="ae32000-elf-objcopy" CFLAGS="-fno-strength-reduce" LDFLAGS="-Wall -nostartfiles -lgcc -lc -lm" ASFLAGS="" ARFLAGS="-rcv" DISFLAGS="-dzShxl" OUTPUTDIR="output/" OBJDIR="obj/" DebugInfo="1" Wall="1" OPTLEVEL="2" OUTPUTFILE="../../../lib/libjpeg.a" />
+    <Directory />
+    <Files>
+        <Source Name="jaricom.c" />
+        <Source Name="jcapimin.c" />
+        <Source Name="jcapistd.c" />
+        <Source Name="jcarith.c" />
+        <Source Name="jccoefct.c" />
+        <Source Name="jccolor.c" />
+        <Source Name="jcdctmgr.c" />
+        <Source Name="jchuff.c" />
+        <Source Name="jcinit.c" />
+        <Source Name="jcmainct.c" />
+        <Source Name="jcmarker.c" />
+        <Source Name="jcmaster.c" />
+        <Source Name="jcomapi.c" />
+        <Source Name="jcparam.c" />
+        <Source Name="jcprepct.c" />
+        <Source Name="jcsample.c" />
+        <Source Name="jctrans.c" />
+        <Source Name="jdapimin.c" />
+        <Source Name="jdapistd.c" />
+        <Source Name="jdarith.c" />
+        <Source Name="jdatadst.c" />
+        <Source Name="jdatasrc.c" />
+        <Source Name="jdcoefct.c" />
+        <Source Name="jdcolor.c" />
+        <Source Name="jddctmgr.c" />
+        <Source Name="jdhuff.c" />
+        <Source Name="jdinput.c" />
+        <Source Name="jdmainct.c" />
+        <Source Name="jdmarker.c" />
+        <Source Name="jdmaster.c" />
+        <Source Name="jdmerge.c" />
+        <Source Name="jdpostct.c" />
+        <Source Name="jdsample.c" />
+        <Source Name="jdtrans.c" />
+        <Source Name="jerror.c" />
+        <Source Name="jfdctflt.c" />
+        <Source Name="jfdctfst.c" />
+        <Source Name="jfdctint.c" />
+        <Source Name="jidctflt.c" />
+        <Source Name="jidctfst.c" />
+        <Source Name="jidctint.c" />
+        <Source Name="jmemmgr.c" />
+        <Source Name="jmemnobs.c" />
+        <Source Name="jpegtran.c" />
+        <Source Name="jquant1.c" />
+        <Source Name="jquant2.c" />
+        <Source Name="jutils.c" />
+        <LastOpenFile Name="jmemmgr.c" Line="8" />
+    </Files>
+    <Event cmd="" desc="" enable="true" />
+    <Debug>
+        <Argument Name="" />
+        <UseGlobalOption Name="true" />
+    </Debug>
+</EISCStudioProject>

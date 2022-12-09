@@ -1,0 +1,135 @@
+
+version 1.3.5
+	* startup/amazon2init.c
+		- modified pll_init()for more stabilization.
+
+version 1.3.4
+	* lib_src/egl/surface/surface_createfrom.c
+                 bug fixed, size calculation bug.
+
+        * lib_src/egl/surface/draw_surface.c
+                 Add A000 format.
+
+        * lib_src/egl/primitives/draw_thickline.c
+                 bug fixed, line is not drawn if the starting coordinates are out of the clip.
+
+        * example/usb_mass_storage/mass_stor.c
+                 change nand timing. 0x1111 -> 0x3333
+
+        * example/NandBootCode
+                 change 4bit ECC boot.
+
+
+version 1.3.3
+        * example/usb_mass_storage/mass_stor.c
+                 modify mass storage mode for windows 10 update.
+
+        * lib_src/usb_host
+                 modify usb host operation for memory detect.
+
+        * lib_src/amazon2/nandctrl.c
+                 Block 0, ECC offset address changed.
+
+        * lib_src/egl/font/textout_inbox.c
+                 add line change function.
+
+        * pc-util/makedurface2.exe, pc-util/Fat_Image_Gen.exe
+                 update program.                 
+
+version 1.3.2
+        * include/amazon2/interrupt.h
+                 changed. CRITICAL_ENTER / CRITICAL_EXIT.
+
+        * lib_src/amazon2/soundmixer.c
+                 bug fixed. snd_dmatransfer function.
+
+version 1.3.1
+        * lib_src/amazon2/sdcard.c
+                 bug fixed, sdhc_writeblock function.
+
+        * lib_src/egl/surface/sw_draw_surface.c
+                 bug fixed, sw_draw_surface_rect function.
+                 bug fixed, sw_draw_surface_scalerect function.
+
+version 1.3
+        * lib_src/usb_host/usb_ohci.c
+                 bug fixed, copy file to NAND Flash.
+
+        * lib_src/egl/font/bit font 
+                 bug fixed, draw rotate bit font.
+
+        * include/amazon2/pmu.h 
+                 Modify register define.
+
+        * include/amazon2/osd.h
+                 bug fixed OSD_MOVE macro function.
+
+        * USB_Virtual_Com example
+                 Change USB interrupt way.
+
+        * doc folder
+                 Add FATFS Manual.
+
+version 1.2.1
+        * lib_src/amazon2/twi.c 
+               bug fix :  twi_trans_complete() function.
+
+version 1.2
+	* Sound Mixer : in case of loop-mode, initialize transfer_len.
+		rename : sound_currnet_time ==> sound_current_time
+	* movieplay.c : more optimize
+	* height of surface of frame-buffer : Bug fixed
+	* WAVE_RELOAD_BUF_MAX added : if wave file is bigger than WAVE_BUF_MAX, interrupt function use buffer allocated by WAVE_RELOAD_BUF_MAX 
+	* nand flash : Buf fixed about SK-HYNIX
+	* H/W Jpeg decoder : more optimized
+	* amazon2kInit.c : initialize DP/DM of USB 
+
+
+version 1.1
+	* Sound Mixer supports 4 channel. ( from 2 channel)
+	
+	* Examples supports AMAZONES-BASE(module + base-board(LCD 800x480))
+		* boardinit.c
+			#inlucde "amazones_base.c"
+		* 2d_demo 
+			new function added ( flags scroll,mov_run )
+			Image changed ( alphabet ==> flags )
+			etc
+
+	* amazon2kInit.c
+		AXI Clock : 200Mhz ==> 166Mhz 
+	
+	* lib_src/amazon2/displayctrl.c
+		Off an unused DAC
+	
+	* lib_src/egl/surface/drawrect_hw.c
+		if X is bigger than width, do nothing.
+		ge_draw_rectfillalpha() bug fixed.  
+	
+	* lib_src/amazon2/sdcard.c
+		delayms(50) added after initializing. 
+
+	* USB Bulk Example added
+		firmware + Win32 application
+
+	* movie play
+		example/movie_play added.
+		lib_src/egl/image/moveplay.c added
+
+	* lib_src/amazon2/soundmixer.c 
+		BOOL sound_playex(WAVE* pWave, U32 start_ms) added.
+		U32 sound_currnet_time(WAVE* pWav) added.
+
+	* etc_driver/ak4183.c
+		optimized.
+
+	* example/flash_data
+		some files deleted and added.
+
+	* H/W jpeg decoder
+		32bit decode ==> 16bit decode, for speed up.
+		if you do not want, modify loadjpg_hw.c:648
+		 
+============================================================================
+version 1.0
+	first release

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<EISCStudioProject version="3.00">
+    <Compile BUILDTYPE="library" CC="ae32000-elf-gcc" AS="ae32000-elf-as" LD="ae32000-elf-ld" AR="ae32000-elf-ar" OBJDUMP="ae32000-elf-objdump" OBJCOPY="ae32000-elf-objcopy" CFLAGS="-DASO_IMDCT -DASO_SYNTH" LDFLAGS=" -nostartfiles" ASFLAGS="" ARFLAGS="-rcv" DISFLAGS="-dzShxl" OUTPUTDIR="output/" OBJDIR="obj/" DebugInfo="1" Wall="1" OPTLEVEL="2" OUTPUTFILE="../../../../lib/libmad.a" />
+    <Directory />
+    <Files>
+        <Source Name="../version.c" />
+        <Source Name="../bit.c" />
+        <Source Name="../fixed.c" />
+        <Source Name="../frame.c" />
+        <Source Name="../huffman.c" />
+        <Source Name="../layer3.c" />
+        <Source Name="../layer12.c" />
+        <Source Name="../stream.c" />
+        <Source Name="../synth.c" />
+        <Source Name="../timer.c" />
+        <Source Name="../imdct_l_ae32000.S" />
+        <Source Name="../synth_full_ae32kb.s" />
+        <Source Name="../decoder.c" />
+        <Header Name="../version.h" />
+        <Header Name="../bit.h" />
+        <Header Name="../decoder.h" />
+        <Header Name="../fixed.h" />
+        <Header Name="../frame.h" />
+        <Header Name="../global.h" />
+        <Header Name="../huffman.h" />
+        <Header Name="../layer3.h" />
+        <Header Name="../layer12.h" />
+        <Header Name="../mad.h" />
+        <Header Name="../stream.h" />
+        <Header Name="../synth.h" />
+        <Header Name="../timer.h" />
+        <LastOpenFile Name="../synth.c" Line="30" />
+    </Files>
+    <Event cmd="" desc="" enable="true" />
+    <Debug>
+        <Argument Name="" />
+        <UseGlobalOption Name="true" />
+    </Debug>
+</EISCStudioProject>

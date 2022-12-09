@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<EISCStudioProject version="3.00">
+    <Compile BUILDTYPE="executable" CC="ae32000-elf-gcc" AS="ae32000-elf-as" LD="ae32000-elf-ld" AR="ae32000-elf-ar" OBJDUMP="ae32000-elf-objdump" OBJCOPY="ae32000-elf-objcopy" CFLAGS="-Wall" LDFLAGS="-Wall -nostartfiles -lgcc -lc -lm" ASFLAGS="" ARFLAGS="-rcv" DISFLAGS="-dzShxl" OUTPUTDIR="output/" OBJDIR="obj/" DebugInfo="1" Wall="1" OPTLEVEL="0" OUTPUTFILE="bootloader.elf" />
+    <Directory>
+        <INCDIR Name="../../Libraries/include" />
+        <INCDIR Name="../../Components/include" />
+        <INCDIR Name="../../Components/DriverLayer/include" />
+        <INCDIR Name="../../Components/Utilities/include" />
+    </Directory>
+    <Files>
+        <Source Name="../../Libraries/startup/amzon2kInit.c" />
+        <Source Name="../../Libraries/startup/startup_amazon2.S" />
+        <Source Name="mass_stor.c" />
+        <Source Name="main.c" />
+        <LinkScript Name="amazon2-bootloader_ram.ld" />
+        <Library Name="../../Libraries/lib/libamazon2.a" />
+        <LastOpenFile Name="main.c" Line="118" />
+    </Files>
+    <Event cmd="" desc="" enable="true" />
+    <Debug>
+        <Argument Name="" />
+        <UseGlobalOption Name="true" />
+    </Debug>
+</EISCStudioProject>
