@@ -49,6 +49,8 @@
 // ***************************************************************************
 // *************** START OF PRIVATE TYPE AND SYMBOL DEFINITIONS **************
 // ***************************************************************************
+#define BUF_SZ 32
+
 
 //****************************************************************************
 //****************** START OF PRIVATE CONFIGURATION SECTION ******************
@@ -72,33 +74,139 @@ static void mainExitHandler(void)
 
 }
 
-BOOL dma_ahb_memcpy_custom( void* dest, void* src, U32 bytelen )
+static void dump_buf(const char *title, BYTE *buf)
 {
+  int i;
+
+  printf("%s Buf: \r\n", title);
+  for(i=0; i<BUF_SZ; i++)
+  {
+    printf("%02X", *buf++);
+
+    if ((i & 0x03) == 0x03)
+      printf(" ");
+
+    if ((i & 0x0F) == 0x0F)
+      printf("\r\n");
+  }
+}
+
+BOOL dma_axi_memcpy_custom( U32* dest, U32* src, U32 bytelen )
+{
+    msgDbg("axi custom");
     U32 conval = 0;
-    // int dmach = get_free_ahb_dma();
-    // if( dmach < 0 )
-    // {
-    //     debugstring( "All DMA Channel is busy\r\n" );
-    //     return FALSE;
-    // }
+    int dmach = get_free_axi_dma();
+
+    if( dmach < 0 )
+        return FALSE;
     U32 bitwidth = 8;
     U32 transfer_size = bytelen;
-    //dcache_invalidate_way();
+
     if( bytelen > 4 )
     {
         if( ( ( U32 )dest & 0x3 ) == 0 ) //32bit
         {
-            conval |= 1 << 25;
+            conval |= 1 << 3;
+        }
+        else if( ( ( U32 )dest & 0x1 ) == 0 ) //16bit
+        {
+            conval |= 1 << 2;
+        }
+
+        if( ( ( U32 )src & 0x3 ) == 0 ) //32bit
+        {
+            conval |= 1 << 11;
+            transfer_size = bytelen >> 2;
+            bitwidth = 32;
+        }
+        else if( ( ( U32 )src & 0x1 ) == 0 ) //16bit
+        {
+            conval |= 1 << 10;
+            transfer_size = bytelen >> 1;
+            bitwidth = 16;
+        }
+    }
+    conval |= 0x1 << 8 | 0x1; //address increment
+
+    *R_XDMASRC( dmach ) = ( U32 )src;
+    *R_XDMADST( dmach ) = ( U32 )dest;
+
+    U32 reloadcnt = transfer_size >> 11; // devide by 0x800
+
+    if( reloadcnt )
+    {
+        *R_XDMACON0( dmach ) = 0x800 << 20 | conval;
+
+        *R_XDMASCOA( dmach ) = 0x0;
+        *R_XDMADCOA( dmach ) = 0x0;
+
+        *R_XDMAST( dmach ) = reloadcnt - 1;
+        *R_XDMACON1( dmach ) = 1 << 18 | 1 << 12 | 1 << 4;
+
+        *R_XDMAEN = 0x1;
+        *R_XDMAIEN |= 0x1 << dmach;
+
+        while( ( *R_XDMAIEN ) & ( 1 << dmach ) );
+
+        U32 totaltx = ( bitwidth / 8 ) * 0x800 * reloadcnt;
+        U32 remain = bytelen - totaltx;
+
+        if( remain )
+        {
+            memcpy( ( U8* )dest + totaltx, ( U8* )src + totaltx, remain );
+        }
+    }
+    else
+    {
+        conval |= transfer_size << 20;
+        *R_XDMACON0( dmach ) = conval;
+        *R_XDMACON1( dmach ) = 0;
+
+        *R_XDMAEN = 0x1;
+        *R_XDMAIEN = 0x1 << dmach;
+        while( ( ( *R_XDMAIEN ) & ( 1 << dmach ) ) );
+        U32 totaltx = ( bitwidth / 8 ) * transfer_size;
+        U32 remain = bytelen - totaltx;
+        if( remain )
+        {
+            memcpy( ( U8* )dest + totaltx, ( U8* )src + totaltx, remain );
+        }
+    }
+
+    set_free_axi_dma( dmach );
+    return TRUE;
+
+}
+
+BOOL dma_ahb_memcpy_custom( void* dest, void* src, U32 bytelen )
+{    
+    U32 conval = 0;
+    int dmach = get_free_ahb_dma();
+    msgDbg("dma custom = %d",dmach);
+    if( dmach < 0 )
+    {
+        debugstring( "All DMA Channel is busy\r\n" );
+        return FALSE;
+    }
+    U32 bitwidth = 8;
+    U32 transfer_size = bytelen;
+    dcache_invalidate_way();
+    if( bytelen > 4 )
+    {
+        // Destination transfer width
+        if( ( ( U32 )dest & 0x3 ) == 0 ) //32bit
+        {
+            conval |= 1 << 25; //
         }
         else if( ( ( U32 )dest & 0x1 ) == 0 ) //16bit
         {
             conval |= 1 << 24;
         }
-
+        // Source transfer width
         if( ( ( U32 )src & 0x3 ) == 0 ) //32bit
         {
             conval |= 1 << 21;
-            transfer_size = bytelen >> 2;
+            transfer_size = bytelen >> 2; // C // 12 // 1100 for 32size
             bitwidth = 32;
         }
         else if( ( ( U32 )src & 0x1 ) == 0 ) //16bit
@@ -111,7 +219,7 @@ BOOL dma_ahb_memcpy_custom( void* dest, void* src, U32 bytelen )
     conval |= DMA_CON_SRC_BST_256;
     conval |= DMA_CON_DST_BST_256;
 
-    //increment mode
+    //increment mode // src, dst address is automatically increased
     conval |= ( 1 << 29 );
     conval |= ( 1 << 28 );
 
@@ -142,18 +250,53 @@ BOOL dma_ahb_memcpy_custom( void* dest, void* src, U32 bytelen )
     {
         conval |= transfer_size;
         *R_DMACON( dmach ) = conval;
-        *R_DMACFG( dmach * 8 ) = 1;
+        *R_DMACFG( dmach ) = 1; // channel enable // If the DMA Transfer is finished, this bit is automatically cleared.
+        msgDbg("1. *R_DMACFG( dmach ) ) & 1 = %u",(*R_DMACFG( dmach ) ) & 1);
         while( ( *R_DMACFG( dmach ) ) & 1 );
+        msgDbg("2. *R_DMACFG( dmach ) ) & 1 = %u",(*R_DMACFG( dmach ) ) & 1);
         set_free_ahb_dma( dmach );
 
         U32 totaltx = ( bitwidth / 8 ) * transfer_size;
         U32 remain = bytelen - totaltx;
         if( remain )
         {
+            msgDbg("remain");
             memcpy( dest + totaltx, src + totaltx, remain );
         }
     }
     return TRUE;
+}
+
+void test_dma_mem(void)
+{
+  BYTE *src_buf, *dst_buf;
+
+  src_buf = malloc(BUF_SZ);
+  dst_buf = malloc(BUF_SZ);
+
+  if(src_buf == NULL || dst_buf == NULL)
+  {
+    msgDbg("Mem alloc fail !!");
+    return;
+  }
+
+  msgDbg("SRC buffer Addr : %p ", src_buf);
+  msgDbg("DST buffer Addr : %p ", dst_buf);
+
+  memset(src_buf, 0xAA, BUF_SZ);
+  memset(dst_buf, 0x55, BUF_SZ);
+  
+  msgDbg("\x1B[32mInitialized\x1B[39m");
+  dump_buf("SRC", src_buf);
+  dump_buf("DST", dst_buf);
+
+  // dma_memcpy(dst_buf, src_buf, BUF_SZ);
+  dma_ahb_memcpy_custom(dst_buf, src_buf, BUF_SZ);
+  // dma_axi_memcpy_custom(dst_buf, src_buf, BUF_SZ);
+
+  msgDbg("\x1B[32mAfter DMA\x1B[39m");
+  dump_buf("SRC", src_buf);
+  dump_buf("DST", dst_buf);
 }
 
 /**
@@ -233,6 +376,8 @@ int main(void)
   // lv_example_anim_3();
   // lv_demo_widgets();   
   // lv_demo_music();
+
+  test_dma_mem();
  
   // ------------------------------ MAIN LOOP  ----------------------------------    
   while(TRUE)
